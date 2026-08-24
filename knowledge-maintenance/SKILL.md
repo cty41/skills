@@ -12,10 +12,16 @@ description: "Use when querying, ingesting, superseding, or linting the cross-sy
 | 操作 | 入口 |
 |---|---|
 | 查询 | `.agents/knowledge/index.md`（从根索引渐进读取） |
-| 影响检测 | `python tools/okf-lite/catalog_impact.py report --worktree` |
-| 同步 scope | `python tools/okf-lite/catalog_impact.py sync --worktree --scope <scope> --write` |
-| 校验 | `python tools/okf-lite/validate_bundle.py` |
-| 工具测试 | `python -m unittest discover tools/okf-lite -p "test_*.py"` |
+| 影响检测 | `python <skills-checkout>/tools/okf-lite/catalog_impact.py report --worktree --repo-root <project>` |
+| 同步 scope | `python <skills-checkout>/tools/okf-lite/catalog_impact.py sync --worktree --scope <scope> --write --repo-root <project>` |
+| 校验 | `python <skills-checkout>/tools/okf-lite/validate_bundle.py --repo-root <project>` |
+| 工具测试 | `python -m unittest discover <skills-checkout>/tools/okf-lite -p "test_*.py"` |
+
+## 工具定位（OKF 工具链）
+
+- OKF 工具**不在项目仓库内**：默认使用全局 skills 仓 checkout 的 `tools/okf-lite/`（`<skills-checkout>` 即该仓的本地路径）。不要假设项目里有 `tools/okf-lite/`。
+- bundle 根目录始终显式指定：`--repo-root <project>` + `--bundle <project>/.agents/knowledge`（或 `OKF_BUNDLE` 环境变量），避免在错误目录执行。
+- 项目若自带 OKF 工具链并在自身 `AGENTS.md` 中映射命令（如 tactics 的 `Tools/okf/*`），以项目的工具与命令为准，忽略本章默认路径。
 
 ## When to use
 
@@ -44,7 +50,7 @@ description: "Use when querying, ingesting, superseding, or linting the cross-sy
 对工作区变更先运行：
 
 ```powershell
-python tools/okf-lite/catalog_impact.py report --worktree
+python <skills-checkout>/tools/okf-lite/catalog_impact.py report --worktree --repo-root <project>
 ```
 
 只处理本任务实际影响的 scope；不要同步工作区中他人的无关修改。scope 词汇由本项目在 AGENTS.md 中映射（默认集合见本仓 README）。
@@ -62,14 +68,14 @@ python tools/okf-lite/catalog_impact.py report --worktree
 在根 `log.md` 记录 Creation、Update、Deprecation 或 Lint。更新正文后，对实际受影响 scope 分别执行：
 
 ```powershell
-python tools/okf-lite/catalog_impact.py sync --worktree --scope <scope> --write
+python <skills-checkout>/tools/okf-lite/catalog_impact.py sync --worktree --scope <scope> --write --repo-root <project>
 ```
 
 ### 5. 校验
 
 ```powershell
-python -m unittest discover tools/okf-lite -p "test_*.py"
-python tools/okf-lite/validate_bundle.py
+python -m unittest discover <skills-checkout>/tools/okf-lite -p "test_*.py"
+python <skills-checkout>/tools/okf-lite/validate_bundle.py --repo-root <project>
 ```
 
 ## Anti-patterns

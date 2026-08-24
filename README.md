@@ -3,6 +3,22 @@
 User-level agent skills shared across projects (DSH Alfred, Tactics, and any tool
 that reads `~/.agents/skills`: DeepSeek Harness, Codex, OpenCode, Claude Code).
 
+## 中文简介
+
+本项目是跨项目共享的**用户级 Agent 技能包**（公共仓库 `cty41/skills`，MIT）。通用技能
+（`grill-me`、`grilling`、`skill-writing`、`brainstorming`、`make-dev-plan`、
+`plan-mode-plan-writer`、`manual-qa-handoff`、`project-doc-organization`、
+`knowledge-maintenance`）通过 `scripts/install-user.ps1` 全局安装到
+`~/.agents/skills`（Windows 目录 junction，macOS/Linux 符号链接），任何读取用户级
+技能根的工具（DSH、Codex、OpenCode、Claude）在**所有项目**中都能使用。
+
+规则：技能一律**平铺单层**（`<技能名>/SKILL.md`）；frontmatter 仅 `name` +
+`description`；禁止项目特指内容。当项目本地存在 `.agents/skills/<技能名>` 时，
+本地版本**覆盖**全局安装（DSH 发现顺序：项目级先于用户级）。
+
+安装/更新/自测见下节英文命令；OKF-lite 工具调用方式见
+[`knowledge-maintenance`](knowledge-maintenance/SKILL.md) 的「工具定位」。
+
 Everything in this repository is a **flat** skill: `<skill-name>/SKILL.md` at the
 repository root, one level deep. Discoverers (DSH, Codex, OpenCode, Claude) scan
 exactly one level under `~/.agents/skills`, so nested skill groups are invisible
@@ -88,8 +104,12 @@ project maps them in its own `AGENTS.md`. Default scopes:
 - `code-and-tests` — implementation facts (indexed, never the source of truth)
 
 `tools/okf-lite` implements bundle validation and a trimmed impact report/sync.
-The golden rule: the index summarizes and links; it is never the source of truth
-for current state.
+The tools live in this checkout (`tools/okf-lite/`), not inside consuming
+projects: invoke them from `<skills-checkout>` with explicit `--repo-root` and
+`--bundle` (exact commands in `knowledge-maintenance/SKILL.md` "工具定位"). A
+project with its own OKF tooling (e.g. Tactics `Tools/okf`) maps commands in its
+`AGENTS.md` and ignores the defaults. The golden rule: the index summarizes and
+links; it is never the source of truth for current state.
 
 ## Authoring rules
 
