@@ -25,6 +25,19 @@ function Test-WindowsLike {
     return $env:OS -eq 'Windows_NT'
 }
 
+function Remove-SkillLink {
+    param([Parameter(Mandatory)][string]$Path)
+    if (Test-WindowsLike) {
+        # Windows PowerShell 5.1 can throw NullReferenceException while removing
+        # a directory junction through Remove-Item. rmdir removes the junction
+        # itself and never traverses into its target.
+        & cmd.exe /d /c rmdir "`"$Path`""
+        if ($LASTEXITCODE -ne 0) { throw "Failed to remove junction: $Path" }
+    } else {
+        Remove-Item -LiteralPath $Path -Force
+    }
+}
+
 # Collect flat skill directories: direct children of the repo root that contain SKILL.md.
 $skills = @(
     Get-ChildItem -Path $repoRoot -Directory | Where-Object { Test-Path (Join-Path $_.FullName 'SKILL.md') }
@@ -53,7 +66,7 @@ foreach ($skill in $skills) {
             Write-Warning "[skip ] $($skill.Name): $linkPath exists and is not a link (review manually)"
             continue
         }
-        Remove-Item $linkPath -Force
+        Remove-SkillLink $linkPath
     }
     if (Test-WindowsLike) {
         New-Item -ItemType Junction -Path $linkPath -Target $skill.FullName | Out-Null
@@ -70,7 +83,7 @@ Get-ChildItem -Path $skillsDir -Force | Where-Object { $null -ne $_.LinkType } |
     $target = ($_.Target -join '')
     if ($target.StartsWith($repoRoot, [System.StringComparison]::OrdinalIgnoreCase) -and $known -notcontains $_.Name) {
         Write-Host "[prune] $($_.Name) (stale)"
-        Remove-Item $_.FullName -Force
+        Remove-SkillLink $_.FullName
     }
 }
 
