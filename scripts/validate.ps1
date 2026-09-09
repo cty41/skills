@@ -7,6 +7,7 @@
     - nesting audit: rejects any SKILL.md deeper than <root>/<skill-name>/
     - per-skill quick_validate (when the skill-creator validator is installed)
     - relative markdown link check inside every skill directory
+    - isolated installer/install-removal tests
     - OKF-lite unit tests
 
     Exit code 0 = green, 1 = failures.
@@ -83,7 +84,15 @@ foreach ($skill in $skillDirs) {
     Write-Step "link check: $($skill.Name) ok"
 }
 
-# --- 4. OKF-lite unit tests -------------------------------------------------
+# --- 4. isolated installer tests --------------------------------------------
+Write-Step 'installer unit tests'
+$previousEap = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
+& (Join-Path $PSScriptRoot 'test-install-user.ps1') 2>&1 | ForEach-Object { Write-Host "  $_" }
+$ErrorActionPreference = $previousEap
+if ($LASTEXITCODE -ne 0) { $failures++ }
+
+# --- 5. OKF-lite unit tests -------------------------------------------------
 if (-not $SkipOkf) {
     $okfDir = Join-Path (Join-Path $repoRoot 'tools') 'okf-lite'
     if (Test-Path (Join-Path $okfDir 'test_validate_bundle.py')) {
