@@ -8,7 +8,7 @@ that reads `~/.agents/skills`: DeepSeek Harness, Codex, OpenCode, Claude Code).
 本项目是跨项目共享的**用户级 Agent 技能包**（公共仓库 `cty41/skills`，MIT）。通用技能
 （`grill-me`、`grilling`、`skill-writing`、`brainstorming`、`make-dev-plan`、
 `plan-mode-plan-writer`、`manual-qa-handoff`、`project-doc-organization`、
-`knowledge-maintenance`、`life-knowledge`）通过 `scripts/install-user.ps1` 全局安装到
+`knowledge-maintenance`、`life-knowledge`、`eli5`）通过 `scripts/install-user.ps1` 全局安装到
 `~/.agents/skills`（Windows 目录 junction，macOS/Linux 符号链接），任何读取用户级
 技能根的工具（DSH、Codex、OpenCode、Claude）在**所有项目**中都能使用。
 
@@ -38,6 +38,7 @@ and forbidden here.
 | `project-doc-organization` | Model/user | Keep docs/plans/knowledge short, current, discoverable |
 | `knowledge-maintenance` | Model/user | Query/ingest/supersede the cross-system knowledge index (OKF-lite) |
 | `life-knowledge` | Model/user | Proactively bootstrap and maintain a private life-knowledge vault through the public control kit |
+| `eli5` | Model/user | Explain a topic for a named audience using calibrated vocabulary, analogies, tone, and depth |
 
 Rules (not skills): `rules/` — `code-documentation.md`, `agent-worktree.md`,
 `foreground-interaction.md`, `knowledge-maintenance.md`. Global rules such as
@@ -122,4 +123,5 @@ own project repositories.
 ## License
 
 [MIT](LICENSE). Ported and de-coupled from personal project `tactics`
-(`.agents/skills`), MIT.
+(`.agents/skills`), MIT. Third-party attributions and imported versions are listed
+in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
