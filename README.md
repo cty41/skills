@@ -6,8 +6,8 @@ that reads `~/.agents/skills`: DeepSeek Harness, Codex, OpenCode, Claude Code).
 ## 中文简介
 
 本项目是跨项目共享的**用户级 Agent 技能包**（公共仓库 `cty41/skills`，MIT）。通用技能
-（`grill-me`、`grilling`、`skill-writing`、`brainstorming`、`make-dev-plan`、
-`plan-mode-plan-writer`、`manual-qa-handoff`、`project-doc-organization`、
+（`grill-me`、`grilling`、`skill-writing`、`brainstorming`、`plan-plain`、
+`manual-qa-handoff`、`project-doc-organization`、
 `knowledge-maintenance`、`life-knowledge`、`eli5`）通过 `scripts/install-user.ps1` 全局安装到
 `~/.agents/skills`（Windows 目录 junction，macOS/Linux 符号链接），任何读取用户级
 技能根的工具（DSH、Codex、OpenCode、Claude）在**所有项目**中都能使用。
@@ -32,8 +32,9 @@ and forbidden here.
 | `grilling` | Model/user | The interview engine: grill the user about a plan or design until every branch is resolved |
 | `skill-writing` | Reference | Progressive-disclosure profile for authoring good skills |
 | `brainstorming` | Model/user | Explore a vague request into a confirmed design before implementation (HARD-GATE) |
-| `make-dev-plan` | Model/user | Clarify P0→P3, then produce an executable development plan |
-| `plan-mode-plan-writer` | Plan mode | Save a decision-complete plan to `.agents/plans/` with handoff context |
+| `plan-plain` | Model/user | Generate/land an executable plan and always write a fixed 「人话版」 section so humans can understand it |
+| `make-dev-plan` | Deprecated | Superseded by `plan-plain` (short redirect) |
+| `plan-mode-plan-writer` | Deprecated | Superseded by `plan-plain` (short redirect) |
 | `manual-qa-handoff` | Model/user | Maintain the manual-acceptance ledger after automated gates pass |
 | `project-doc-organization` | Model/user | Keep docs/plans/knowledge short, current, discoverable |
 | `knowledge-maintenance` | Model/user | Query/ingest/supersede the cross-system knowledge index (OKF-lite) |
