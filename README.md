@@ -6,8 +6,8 @@ that reads `~/.agents/skills`: DeepSeek Harness, Codex, OpenCode, Claude Code).
 ## 中文简介
 
 本项目是跨项目共享的**用户级 Agent 技能包**（公共仓库 `cty41/skills`，MIT）。通用技能
-（`grill-me`、`grilling`、`skill-writing`、`brainstorming`、`make-dev-plan`、
-`plan-mode-plan-writer`、`manual-qa-handoff`、`project-doc-organization`、
+（`grill-me`、`grilling`、`skill-writing`、`brainstorming`、`plan-plain`、
+`manual-qa-handoff`、`project-doc-organization`、
 `knowledge-maintenance`、`life-knowledge`、`eli5`）通过 `scripts/install-user.ps1` 全局安装到
 `~/.agents/skills`（Windows 目录 junction，macOS/Linux 符号链接），任何读取用户级
 技能根的工具（DSH、Codex、OpenCode、Claude）在**所有项目**中都能使用。
@@ -32,8 +32,9 @@ and forbidden here.
 | `grilling` | Model/user | The interview engine: grill the user about a plan or design until every branch is resolved |
 | `skill-writing` | Reference | Progressive-disclosure profile for authoring good skills |
 | `brainstorming` | Model/user | Explore a vague request into a confirmed design before implementation (HARD-GATE) |
-| `make-dev-plan` | Model/user | Clarify P0→P3, then produce an executable development plan |
-| `plan-mode-plan-writer` | Plan mode | Save a decision-complete plan to `.agents/plans/` with handoff context |
+| `plan-plain` | Model/user | Generate/land an executable plan and always write a fixed 「人话版」 section so humans can understand it |
+| `make-dev-plan` | Deprecated | Superseded by `plan-plain` (short redirect) |
+| `plan-mode-plan-writer` | Deprecated | Superseded by `plan-plain` (short redirect) |
 | `manual-qa-handoff` | Model/user | Maintain the manual-acceptance ledger after automated gates pass |
 | `project-doc-organization` | Model/user | Keep docs/plans/knowledge short, current, discoverable |
 | `knowledge-maintenance` | Model/user | Query/ingest/supersede the cross-system knowledge index (OKF-lite) |
@@ -67,13 +68,42 @@ git clone git@github.com:cty41/skills.git ~/codes/agent-skills
 pwsh -File ~/codes/agent-skills/scripts/install-user.ps1
 ```
 
-The installer creates a link per skill inside `~/.agents/skills/<name>` pointing
-back into this checkout — a directory junction on Windows, a symbolic link on
-macOS/Linux. It is idempotent: existing correct links are kept, broken ones are
-repaired, stale ones are pruned. Re-run it after `git pull` to refresh.
+With no arguments, the installer retains the standalone user-level behavior: it
+creates `~/.agents/skills/<name>` links pointing back into this checkout — a
+directory junction on Windows, a symbolic link on macOS/Linux. It is idempotent:
+correct links are kept, while stale or changed links are repaired/pruned **only**
+when their targets are inside this checkout. Real directories/files and links to
+other checkouts are never replaced or removed.
 
-No project repository is modified; every tool that reads the user-agents root
-(`~/.agents/skills`) sees these skills in every working directory.
+Project-local installation is opt-in. It writes links under
+`<project>/.agents/skills`, where the project is either explicit or the nearest
+`.git` ancestor of the current directory:
+
+```powershell
+# Explicit project root
+powershell -ExecutionPolicy Bypass -File .\scripts\install-user.ps1 `
+  -Scope Project -ProjectRoot D:\codes\my-project
+
+# Discover the nearest project from the current directory
+powershell -ExecutionPolicy Bypass -File D:\codes\agent-skills\scripts\install-user.ps1 `
+  -Scope Project
+
+# Preview either scope without any filesystem mutation; emit machine-readable output
+powershell -ExecutionPolicy Bypass -File .\scripts\install-user.ps1 `
+  -Scope Project -ProjectRoot D:\codes\my-project -DryRun -Json
+
+# Safely uninstall links owned by this checkout
+powershell -ExecutionPolicy Bypass -File .\scripts\install-user.ps1 `
+  -Scope Project -ProjectRoot D:\codes\my-project -Remove
+```
+
+`-Scope User` is the default. `-ProjectRoot` is valid only with `-Scope Project`.
+`-Remove` is compatible with either scope, `-DryRun`, and `-Json`. It scans the
+selected skill root and removes only junctions/symbolic links whose normalized
+targets are inside this checkout, including stale links left by older versions.
+It leaves real files/directories and links to any other location untouched, and
+does not remove the `.agents/skills` directory itself. Re-run the install command
+after `git pull` to refresh the selected installation.
 
 ## Update
 
@@ -90,9 +120,15 @@ powershell -ExecutionPolicy Bypass -File D:\codes\agent-skills\scripts\smoke.ps1
 ```
 
 `validate.ps1` runs per-skill `quick_validate` (when the skill-creator validator is
-present), the flat/nesting audit, local markdown link checks, and the OKF-lite
-unit tests. `smoke.ps1` verifies that `~/.agents/skills/<name>` links exist for
-every skill and resolve into this checkout.
+present), the flat/nesting audit, local markdown link checks, isolated installer
+install/removal tests, and the OKF-lite unit tests. `smoke.ps1` verifies that every installed link resolves into this
+checkout. It accepts the same `-Scope User|Project` and `-ProjectRoot` selection
+as the installer, plus `-Json`, for example:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\smoke.ps1 `
+  -Scope Project -ProjectRoot D:\codes\my-project -Json
+```
 
 ## OKF-lite scope vocabulary
 

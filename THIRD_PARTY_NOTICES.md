@@ -6,7 +6,7 @@ The `eli5` skill is adapted from:
 
 - Project: [DreambigOu/ELI5](https://github.com/DreambigOu/ELI5)
 - Upstream commit: `a766623b062331fdde53467001379b4ddf3acc2f`
-- Copyright: Copyright (c) 2026
+- Copyright: Copyright (c) 2026 Andrew Ou
 - License: MIT
 
 The upstream license text follows:
@@ -14,7 +14,7 @@ The upstream license text follows:
 ```text
 MIT License
 
-Copyright (c) 2026
+Copyright (c) 2026 Andrew Ou
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
